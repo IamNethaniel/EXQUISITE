@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshCatch Seafood Resale</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0066cc;
+            --secondary: #00aaff;
+            --accent: #ff6b35;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+        }
+        h1,h2,h3,h4,h5,h6{font-family:'Playfair Display',serif;font-weight:700;}
+        .navbar{background-color:rgba(255,255,255,.95);box-shadow:0 2px 10px rgba(0,0,0,.1);}
+        .hero{
+            background:linear-gradient(rgba(0,0,0,.4),rgba(0,0,0,.4)),url('https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
+            color:#fff;padding:150px 0;text-align:center;
+        }
+        .hero h1{font-size:3.5rem;margin-bottom:1rem;}
+        .hero p{font-size:1.25rem;max-width:700px;margin:0 auto 2rem;}
+        .specials{background-color:var(--light);padding:80px 0;}
+        .special-card,.shop-item{
+            border:none;border-radius:15px;overflow:hidden;
+            box-shadow:0 5px 15px rgba(0,0,0,.1);
+            transition:transform .3s;margin-bottom:30px;
+        }
+        .special-card:hover,.shop-item:hover{transform:translateY(-10px);}
+        .shop-item img,.special-card img{height:220px;object-fit:cover;}
+        .price{font-size:1.5rem;color:var(--accent);font-weight:600;}
+        .igf-poster{border-radius:12px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,.1);margin-bottom:20px;}
+        .igf-poster img{width:100%;height:auto;transition:transform .3s;}
+        .igf-poster:hover img{transform:scale(1.05);}
+        .about-section{padding:100px 0;background:#fff;}
+        .contact-section{padding:100px 0;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;}
+        .contact-section h2{color:#fff;}
+        .form-control{border-radius:8px;padding:12px 15px;}
+        .btn-primary{
+            background:var(--accent);border:none;padding:12px 30px;
+            border-radius:50px;font-weight:600;transition:all .3s;
+        }
+        .btn-primary:hover{background:#e55a2b;transform:translateY(-2px);}
+        footer{background:var(--dark);color:#fff;padding:50px 0 20px;}
+        .social-icons a{color:#fff;font-size:1.5rem;margin:0 10px;transition:color .3s;}
+        .social-icons a:hover{color:var(--accent);}
+
+        /* ----- Cart Drawer ----- */
+        .cart-drawer{
+            position:fixed;top:0;right:-400px;width:400px;height:100vh;
+            background:#fff;box-shadow:-5px 0 15px rgba(0,0,0,.2);
+            transition:right .4s ease;z-index:1050;overflow-y:auto;padding:20px;
+        }
+        .cart-drawer.open{right:0;}
+        .cart-overlay{
+            position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,.5);opacity:0;visibility:hidden;
+            transition:opacity .4s;z-index:1040;
+        }
+        .cart-overlay.show{opacity:1;visibility:visible;}
+        .cart-header{
+            display:flex;justify-content:space-between;align-items:center;
+            border-bottom:1px solid #eee;padding-bottom:10px;margin-bottom:20px;
+        }
+        .cart-item{
+            display:flex;align-items:center;border-bottom:1px solid #eee;padding:15px 0;
+        }
+        .cart-item img{
+            width:70px;height:70px;object-fit:cover;border-radius:8px;margin-right:15px;
+        }
+        .cart-item-details{flex:1;}
+        .quantity-controls button{width:30px;height:30px;font-size:1rem;}
+        .cart-total{font-size:1.5rem;font-weight:600;text-align:right;margin:20px 0;}
+        .empty-cart{text-align:center;color:#888;font-style:italic;padding:40px 0;}
+        @media(max-width:768px){
+            .hero{padding:100px 0;}
+            .hero h1{font-size:2.5rem;}
+            .cart-drawer{width:100%;right:-100%;}
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== NAVIGATION ==================== -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="#"><i class="fas fa-fish text-primary me-2"></i><strong>FreshCatch</strong> Seafood</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#shop">Shop</a></li>
+                <li class="nav-item"><a class="nav-link" href="#specials">Specials</a></li>
+                <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                <li class="nav-item">
+                    <a href="#" id="cartBtn" class="nav-link position-relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:.65rem;display:none;">0</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<section id="home" class="hero">
+    <div class="container">
+        <h1>Freshest Seafood Delivered Daily</h1>
+        <p>Premium quality seafood sourced directly from trusted fishermen. From ocean to table in 24 hours.</p>
+        <a href="#shop" class="btn btn-primary btn-lg">Shop Now</a>
+    </div>
+</section>
+
+<!-- ==================== SPECIALS CAROUSEL ==================== -->
+<section id="specials" class="specials">
+    <div class="container">
+        <div class="text-center mb-5"><h2 class="display-5">Today's Specials</h2><p class="lead">Limited time offers – fresh from the boat!</p></div>
+        <div id="specialsCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+
+                <!-- Slide 1 -->
+                <div class="carousel-item active">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="special-card" data-id="s1" data-name="Wild Alaskan King Salmon" data-price="24.99"
+                                 data-img="https://images.unsplash.com/photo-1627308595222-4a1c0d15daca?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                                <img src="https://images.unsplash.com/photo-1627308595222-4a1c0d15daca?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="King Salmon">
+                                <div class="p-4">
+                                    <h5>Wild Alaskan King Salmon</h5><p class="price">$24.99/lb</p>
+                                    <p class="text-muted">Limited stock – caught this morning!</p>
+                                    <button class="btn btn-outline-primary btn-sm add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="special-card" data-id="s2" data-name="Jumbo Gulf Shrimp" data-price="18.99"
+                                 data-img="https://images.unsplash.com/photo-1559734082-47e3c85a93b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                                <img src="https://images.unsplash.com/photo-1559734082-47e3c85a93b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Jumbo Shrimp">
+                                <div class="p-4">
+                                    <h5>Jumbo Gulf Shrimp</h5><p class="price">$18.99/lb</p>
+                                    <p class="text-muted">Peeled &amp; deveined – 16/20 count</p>
+                                    <button class="btn btn-outline-primary btn-sm add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="special-card" data-id="s3" data-name="Cold Water Lobster Tails" data-price="34.99"
+                                 data-img="https://images.unsplash.com/photo-1623593988372-9673e7a9c49c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                                <img src="https://images.unsplash.com/photo-1623593988372-9673e7a9c49c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Lobster Tails">
+                                <div class="p-4">
+                                    <h5>Cold Water Lobster Tails</h5><p class="price">$34.99 each</p>
+                                    <p class="text-muted">6-7 oz premium tails</p>
+                                    <button class="btn btn-outline-primary btn-sm add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="carousel-item">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="special-card" data-id="s4" data-name="Sashimi-Grade Ahi Tuna" data-price="28.99"
+                                 data-img="https://images.unsplash.com/photo-1606851094291-37f5a2e7c980?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                                <img src="https://images.unsplash.com/photo-1606851094291-37f5a2e7c980?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Ahi Tuna">
+                                <div class="p-4">
+                                    <h5>Sashimi-Grade Ahi Tuna</h5><p class="price">$28.99/lb</p>
+                                    <p class="text-muted">Perfect for poke or searing</p>
+                                    <button class="btn btn-outline-primary btn-sm add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="special-card" data-id="s5" data-name="Dry-Packed Sea Scallops" data-price="32.99"
+                                 data-img="https://images.unsplash.com/photo-1625937288792-5c8d0a9e2d9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                                <img src="https://images.unsplash.com/photo-1625937288792-5c8d0a9e2d9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Sea Scallops">
+                                <div class="p-4">
+                                    <h5>Dry-Packed Sea Scallops</h5><p class="price">$32.99/lb</p>
+                                    <p class="text-muted">U-10 count – chemical free</p>
+                                    <button class="btn btn-outline-primary btn-sm add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="special-card" data-id="s6" data-name="King Crab Legs" data-price="49.99"
+                                 data-img="https://images.unsplash.com/photo-1599084992250-3aa3c2cfea62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                                <img src="https://images.unsplash.com/photo-1599084992250-3aa3c2cfea62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Crab Legs">
+                                <div class="p-4">
+                                    <h5>King Crab Legs</h5><p class="price">$49.99/lb</p>
+                                    <p class="text-muted">Pre-cooked &amp; flash frozen</p>
+                                    <button class="btn btn-outline-primary btn-sm add-to-cart">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#specialsCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+            <button class="carousel-control-next" type="button" data-bs-target="#specialsCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== SHOP GRID ==================== -->
+<section id="shop" class="py-5">
+    <div class="container">
+        <div class="text-center mb-5"><h2 class="display-5">Our Seafood Selection</h2><p class="lead">Browse our premium selection of fresh and frozen seafood</p></div>
+        <div class="row">
+
+            <!-- Product 1 -->
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="shop-item" data-id="p1" data-name="Atlantic Cod Fillets" data-price="16.99"
+                     data-img="https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                    <img src="https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Atlantic Cod">
+                    <div class="p-3">
+                        <h6>Atlantic Cod Fillets</h6><p class="price mb-1">$16.99/lb</p>
+                        <small class="text-muted">Skinless, boneless</small>
+                        <div class="mt-2"><button class="btn btn-primary btn-sm w-100 add-to-cart">Add to Cart</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="shop-item" data-id="p2" data-name="Scottish Salmon" data-price="22.99"
+                     data-img="https://images.unsplash.com/photo-1627308595222-4a1c0d15daca?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                    <img src="https://images.unsplash.com/photo-1627308595222-4a1c0d15daca?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Salmon">
+                    <div class="p-3">
+                        <h6>Scottish Salmon</h6><p class="price mb-1">$22.99/lb</p>
+                        <small class="text-muted">Farm-raised, antibiotic-free</small>
+                        <div class="mt-2"><button class="btn btn-primary btn-sm w-100 add-to-cart">Add to Cart</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="shop-item" data-id="p3" data-name="White Shrimp" data-price="14.99"
+                     data-img="https://images.unsplash.com/photo-1559734082-47e3c85a93b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                    <img src="https://images.unsplash.com/photo-1559734082-47e3c85a93b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Shrimp">
+                    <div class="p-3">
+                        <h6>White Shrimp</h6><p class="price mb-1">$14.99/lb</p>
+                        <small class="text-muted">P&amp;D, 26/30 count</small>
+                        <div class="mt-2"><button class="btn btn-primary btn-sm w-100 add-to-cart">Add to Cart</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 4 -->
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="shop-item" data-id="p4" data-name="Live Maine Lobster" data-price="29.99"
+                     data-img="https://images.unsplash.com/photo-1623593988372-9673e7a9c49c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                    <img src="https://images.unsplash.com/photo-1623593988372-9673e7a9c49c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Lobster">
+                    <div class="p-3">
+                        <h6>Live Maine Lobster</h6><p class="price mb-1">$29.99 each</p>
+                        <small class="text-muted">1.25-1.5 lb</small>
+                        <div class="mt-2"><button class="btn btn-primary btn-sm w-100 add-to-cart">Add to Cart</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 5 -->
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="shop-item" data-id="p5" data-name="Yellowfin Tuna Steaks" data-price="26.99"
+                     data-img="https://images.unsplash.com/photo-1606851094291-37f5a2e7c980?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                    <img src="https://images.unsplash.com/photo-1606851094291-37f5a2e7c980?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Tuna">
+                    <div class="p-3">
+                        <h6>Yellowfin Tuna Steaks</h6><p class="price mb-1">$26.99/lb</p>
+                        <small class="text-muted">Sushi-grade</small>
+                        <div class="mt-2"><button class="btn btn-primary btn-sm w-100 add-to-cart">Add to Cart</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 6 -->
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="shop-item" data-id="p6" data-name="Day Boat Scallops" data-price="34.99"
+                     data-img="https://images.unsplash.com/photo-1625937288792-5c8d0a9e2d9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                    <img src="https://images.unsplash.com/photo-1625937288792-5c8d0a9e2d9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Scallops">
+                    <div class="p-3">
+                        <h6>Day Boat Scallops</h6><p class="price mb-1">$34.99/lb</p>
+                        <small class="text-muted">U-10, dry pack</small>
+                        <div class="mt-2"><button class="btn btn-primary btn-sm w-100 add-to-cart">Add to Cart</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 7 -->
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="shop-item" data-id="p7" data-name="Snow Crab Clusters" data-price="24.99"
+                     data-img="https://images.unsplash.com/photo-1599084992250-3aa3c2cfea62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                    <img src="https://images.unsplash.com/photo-1599084992250-3aa3c2cfea62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Crab">
+                    <div class="p-3">
+                        <h6>Snow Crab Clusters</h6><p class="price mb-1">$24.99/lb</p>
+                        <small class="text-muted">5-8 oz per cluster</small>
+                        <div class="mt-2"><button class="btn btn-primary btn-sm w-100 add-to-cart">Add to Cart</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 8 -->
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="shop-item" data-id="p8" data-name="PEI Mussels" data-price="6.99"
+                     data-img="https://images.unsplash.com/photo-1604902594624-904a5f7af5c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                    <img src="https://images.unsplash.com/photo-1604902594624-904a5f7af5c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Mussels">
+                    <div class="p-3">
+                        <h6>PEI Mussels</h6><p class="price mb-1">$6.99/lb</p>
+                        <small class="text-muted">Farm-raised, rope cultured</small>
+                        <div class="mt-2"><button class="btn btn-primary btn-sm w-100 add-to-cart">Add to Cart</button></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ==================== IGF POSTERS ==================== -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5"><h2 class="display-5">From Our Instagram</h2><p class="lead">Follow us @FreshCatchSeafood for daily specials and behind-the-scenes</p></div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="igf-poster">
+                    <img src="https://images.unsplash.com/photo-1606854295212-1d7e5e2d40e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="IGF Post 1">
+                    <div class="p-3 bg-white"><p class="mb-0"><strong>Fresh catch of the day!</strong> Wild halibut just in from Alaska</p><small class="text-muted">@freshcatchseafood • 2h ago</small></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="igf-poster">
+                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="IGF Post 2">
+                    <div class="p-3 bg-white"><p class="mb-0"><strong>Weekend Special:</strong> Buy 2lbs shrimp, get 1lb free!</p><small class="text-muted">@freshcatchseafood • 5h ago</small></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="igf-poster">
+                    <img src="https://images.unsplash.com/photo-1604902594624-904a5f7af5c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="IGF Post 3">
+                    <div class="p-3 bg-white"><p class="mb-0"><strong>Behind the scenes:</strong> Sorting today's delivery at 5AM</p><small class="text-muted">@freshcatchseafood • 1d ago</small></div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-4"><a href="https://instagram.com/freshcatchseafood" target="_blank" class="btn btn-outline-primary"><i class="fab fa-instagram"></i> Follow on Instagram</a></div>
+    </div>
+</section>
+
+<!-- ==================== ABOUT ==================== -->
+<section id="about" class="about-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2>About FreshCatch Seafood</h2>
+                <p class="lead">Your trusted source for premium seafood since 2015.</p>
+                <p>For over a decade, we've built direct relationships with fishermen from Maine to Alaska, ensuring you get the freshest catch possible. We specialize in sustainable, responsibly sourced seafood delivered to your door or available for pickup.</p>
+                <p>Our team of seafood experts hand-selects each item, guaranteeing quality you can taste. From wild-caught salmon to farm-raised oysters, we bring the ocean's best to your table.</p>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Next-day delivery in the tri-state area</li>
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Same-day pickup available</li>
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Sustainable &amp; traceable sourcing</li>
+                    <li class="mb-2"><i class="fas fa-check text-primary me-2"></i> Expert customer service</li>
+                </ul>
+                <a href="#contact" class="btn btn-primary">Get in Touch</a>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="https://images.unsplash.com/photo-1587472240160-0-0-0-0-0-0-0-0-0-0.jpg?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="FreshCatch Team" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== CONTACT ==================== -->
+<section id="contact" class="contact-section">
+    <div class="container">
+        <div class="row"><div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5"><h2>Contact Us</h2><p class="lead">Questions? Orders? We'd love to hear from you!</p></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="bg-white p-4 rounded text-dark h-100">
+                        <h5><i class="fas fa-map-marker-alt text-primary me-2"></i> Visit Us</h5>
+                        <p>123 Harbor Drive<br>Portland, ME 04101</p>
+                        <p><strong>Hours:</strong><br>Mon-Fri: 8AM-6PM<br>Sat: 9AM-4PM<br>Sun: Closed</p>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="bg-white p-4 rounded text-dark h-100">
+                        <h5><i class="fas fa-phone text-primary me-2"></i> Call Us</h5>
+                        <p class="mb-1"><strong>Phone:</strong> (207) 555-0198</p>
+                        <p class="mb-1"><strong>Orders:</strong> (207) 555-0199</p>
+                        <p><strong>Email:</strong> hello@freshcatchseafood.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <form class="bg-white p-5 rounded text-dark">
+                <div class="row">
+                    <div class="col-md-6 mb-3"><label class="form-label">Name</label><input type="text" class="form-control" required></div>
+                    <div class="col-md-6 mb-3"><label class="form-label">Email</label><input type="email" class="form-control" required></div>
+                </div>
+                <div class="mb-3"><label class="form-label">Subject</label><input type="text" class="form-control"></div>
+                <div class="mb-3"><label class="form-label">Message</label><textarea class="form-control" rows="5" required></textarea></div>
+                <div class="text-center"><button type="submit" class="btn btn-primary">Send Message</button></div>
+            </form>
+        </div></div>
+    </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <h5><i class="fas fa-fish text-primary me-2"></i> FreshCatch Seafood</h5>
+                <p>Your trusted partner for premium, sustainable seafood delivered fresh to your door.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h6>Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#home" class="text-white text-decoration-none">Home</a></li>
+                    <li><a href="#shop" class="text-white text-decoration-none">Shop</a></li>
+                    <li><a href="#specials" class="text-white text-decoration-none">Specials</a></li>
+                    <li><a href="#about" class="text-white text-decoration-none">About</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h6>Services</h6>
+                <ul class="list-unstyled">
+                    <li>Next-Day Delivery</li><li>Same-Day Pickup</li><li>Catering Orders</li><li>Wholesale Inquiries</li>
+                </ul>
+            </div>
+            <div class="col-lg-3 mb-4">
+                <h6>Newsletter</h6>
+                <p>Get weekly specials and new arrivals!</p>
+                <form><div class="input-group"><input type="email" class="form-control" placeholder="Your email"><button class="btn btn-primary" type="submit">Subscribe</button></div></form>
+            </div>
+        </div>
+        <hr class="bg-white">
+        <div class="text-center"><p class="mb-0">© 2025 FreshCatch Seafood. All rights reserved. | <a href="#" class="text-white text-decoration-none">Privacy Policy</a></p></div>
+    </div>
+</footer>
+
+<!-- ==================== CART DRAWER ==================== -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+        <h5><i class="fas fa-shopping-cart"></i> Your Cart</h5>
+        <button id="closeCart" class="btn-close"></button>
+    </div>
+    <div id="cartItems"></div>
+    <div class="cart-total">Total: $<span id="cartTotal">0.00</span></div>
+    <button id="checkoutBtn" class="btn btn-primary w-100">Proceed to Checkout</button>
+</div>
+
+<!-- ==================== SCRIPTS ==================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ---------- CART SYSTEM ---------- */
+let cart = JSON.parse(localStorage.getItem('freshcatch_cart')) || [];
+
+const cartBtn = document.getElementById('cartBtn');
+const cartDrawer = document.getElementById('cartDrawer');
+const cartOverlay = document.getElementById('cartOverlay');
+const closeCart = document.getElementById('closeCart');
+const cartItemsEl = document.getElementById('cartItems');
+const cartTotalEl = document.getElementById('cartTotal');
+const cartCountEl = document.getElementById('cartCount');
+const checkoutBtn = document.getElementById('checkoutBtn');
+
+/* Open / Close */
+cartBtn.addEventListener('click', e=>{e.preventDefault();cartDrawer.classList.add('open');cartOverlay.classList.add('show');renderCart();});
+closeCart.addEventListener('click', closeDrawer);
+cartOverlay.addEventListener('click', closeDrawer);
+function closeDrawer(){cartDrawer.classList.remove('open');cartOverlay.classList.remove('show');}
+
+/* Add to Cart */
+document.querySelectorAll('.add-to-cart').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+        const card = btn.closest('.shop-item, .special-card');
+        const id = card.dataset.id;
+        const name = card.dataset.name;
+        const price = parseFloat(card.dataset.price);
+        const img = card.dataset.img;
+
+        const existing = cart.find(i=>i.id===id);
+        if(existing) existing.qty+=1;
+        else cart.push({id,name,price,img,qty:1});
+
+        saveCart(); updateCartUI();
+        btn.textContent='Added!'; setTimeout(()=>{btn.textContent='Add to Cart';},1000);
+    });
+});
+
+/* Render Cart */
+function renderCart(){
+    if(cart.length===0){
+        cartItemsEl.innerHTML='<p class="empty-cart">Your cart is empty.</p>';
+        cartTotalEl.textContent='0.00';
+        return;
+    }
+    cartItemsEl.innerHTML = cart.map(item=>`
+        <div class="cart-item">
+            <img src="${item.img}" alt="${item.name}">
+            <div class="cart-item-details">
+                <strong>${item.name}</strong>
+                <p class="mb-1">$${item.price.toFixed(2)} ${item.price%1===0?'':'/lb'}</p>
+                <div class="quantity-controls d-flex align-items-center">
+                    <button class="btn btn-sm btn-outline-secondary decrease" data-id="${item.id}">-</button>
+                    <span class="mx-2">${item.qty}</span>
+                    <button class="btn btn-sm btn-outline-secondary increase" data-id="${item.id}">+</button>
+                </div>
+            </div>
+            <button class="btn btn-sm btn-danger ms-2 remove-item" data-id="${item.id}">×</button>
+        </div>
+    `).join('');
+
+    const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+    cartTotalEl.textContent = total.toFixed(2);
+
+    document.querySelectorAll('.increase').forEach(b=>b.addEventListener('click',incQty));
+    document.querySelectorAll('.decrease').forEach(b=>b.addEventListener('click',decQty));
+    document.querySelectorAll('.remove-item').forEach(b=>b.addEventListener('click',removeItem));
+}
+function incQty(e){changeQty(e.target.dataset.id,1);}
+function decQty(e){changeQty(e.target.dataset.id,-1);}
+function changeQty(id,delta){
+    const item = cart.find(i=>i.id===id);
+    if(item){
+        item.qty = Math.max(1, item.qty+delta);
+        if(item.qty===0) removeItemById(id);
+        saveCart(); updateCartUI(); renderCart();
+    }
+}
+function removeItem(e){removeItemById(e.target.dataset.id);}
+function removeItemById(id){
+    cart = cart.filter(i=>i.id!==id);
+    saveCart(); updateCartUI(); renderCart();
+}
+function saveCart(){localStorage.setItem('freshcatch_cart',JSON.stringify(cart));}
+function updateCartUI(){
+    const count = cart.reduce((s,i)=>s+i.qty,0);
+    cartCountEl.textContent=count;
+    cartCountEl.style.display=count>0?'block':'none';
+}
+
+/* Checkout (demo) */
+checkoutBtn.addEventListener('click',()=>{
+    if(cart.length===0){alert('Your cart is empty!');return;}
+    alert(`Redirecting to checkout... Total: $${cartTotalEl.textContent}\n(In a real site this would go to Stripe/PayPal)`);
+    // cart=[]; saveCart(); updateCartUI(); renderCart(); // uncomment to clear after checkout
+});
+
+/* Init */
+updateCartUI(); renderCart();
+
+/* Smooth scroll */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click',e=>{
+        const href=a.getAttribute('href');
+        if(href==='#') return;
+        e.preventDefault();
+        document.querySelector(href).scrollIntoView({behavior:'smooth'});
+    });
+});
+
+/* Contact form demo */
+document.querySelector('form').addEventListener('submit',e=>{
+    e.preventDefault();
+    alert('Thank you for your message! We\'ll get back to you soon.');
+    e.target.reset();
+});
+</script>
+</body>
+</html>
